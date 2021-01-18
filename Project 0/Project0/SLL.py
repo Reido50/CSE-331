@@ -110,6 +110,7 @@ class SLL:
         Return boolean indicating whether SLL is empty.
         :return: True if SLL is empty, else False.
         """
+        return (self.head == None)
         pass
 
     def push_front(self, val: Any) -> None:
@@ -118,6 +119,8 @@ class SLL:
         param val: value to be added to the SLL.
         return: None.
         """
+        node = Node(val, self.head)
+        self.head = node
         pass
 
     def push_back(self, val: Any) -> None:
@@ -126,6 +129,16 @@ class SLL:
         param val: value to be added to the SLL.
         return: None.
         """
+        # Insert newNode after the last element (the tail)
+        newNode = Node(val, None)
+        current = self.head
+        if(self.head != None):
+            while(current.next != None):
+                current = current.next
+            current.next = newNode
+        else:
+            # Empty list case
+            self.push_front(val)
         pass
 
     def remove(self, val: Any) -> bool:
@@ -134,6 +147,21 @@ class SLL:
         param val: value to be removed from the SLL.
         return: True if a node is removed, else False.
         """
+        current = self.head
+
+        if(current != None):
+            # Remove head case
+            if(current.value == val):
+                self.head = current.next
+                return True
+
+            while(current.next != None):
+                if(current.next.value == val):
+                    current.next = current.next.next
+                    return True
+                current = current.next
+
+        return False
         pass
 
     def reverse(self) -> None:
@@ -141,4 +169,22 @@ class SLL:
         Reverses the SLL.
         return: None.
         """
+        current = self.head
+
+        if(current != None):
+            # Extract list of SLL values
+            values = [current.value]
+            while(current.next != None):
+                current = current.next
+                values.append(current.value)
+
+            # Reverse the list of SLL values
+            values.reverse()
+
+            # Transfer reversed values from list to SLL
+            current = self.head
+            for val in values:
+                current.value = val
+                current = current.next
+            
         pass
