@@ -1,7 +1,7 @@
 """
 Project 1
 CSE 331 S21 (Onsay)
-Your Name
+Reid Harry
 DLL.py
 """
 
@@ -105,9 +105,7 @@ class DLL:
         :return: True if DLL is empty, else False.
         """
         # Check to see if head is null
-        return (self.head == None)
-
-        pass
+        return self.head is None
 
     def push(self, val: T, back: bool = True) -> None:
         """
@@ -121,30 +119,28 @@ class DLL:
         :return: None.
         """
         # Create the node
-        newNode = Node(val, None, None)
+        newnode = Node(val, None, None)
 
         # Check if the DLL is not empty
         if not self.empty():
             # Determine if front or back
             if back:
                 # Append node to the tail
-                self.tail.next = newNode
-                newNode.prev = self.tail
-                self.tail = newNode
+                self.tail.next = newnode
+                newnode.prev = self.tail
+                self.tail = newnode
             else:
                 # Prepend node to the head
-                self.head.prev = newNode
-                newNode.next = self.head
-                self.head = newNode
+                self.head.prev = newnode
+                newnode.next = self.head
+                self.head = newnode
         else:
             # Add initial node
-            self.head = newNode
-            self.tail = newNode
+            self.head = newnode
+            self.tail = newnode
 
         # Increment list size
         self.size += 1
-
-        pass
 
     def pop(self, back: bool = True) -> None:
         """
@@ -171,8 +167,6 @@ class DLL:
             # Decrement list size
             self.size -= 1
 
-        pass
-
     def from_list(self, source: List[T]) -> None:
         """
         Construct DLL from a standard Python list.
@@ -187,8 +181,6 @@ class DLL:
             # Add value from Python list to DLL
             self.push(val, True)
 
-        pass
-
     def to_list(self) -> List[T]:
         """
         Construct standard Python list from DLL.
@@ -201,17 +193,15 @@ class DLL:
         l = []
 
         # Set first node
-        curNode = self.head
+        curnode = self.head
 
         # Traverse the DLL
-        while curNode != None:
-            l.append(curNode.value)
-            # Increment curNode
-            curNode = curNode.next
-        
-        return l
+        while curnode is not None:
+            l.append(curnode.value)
+            # Increment curnode
+            curnode = curnode.next
 
-        pass
+        return l
 
     def find(self, val: T) -> Node:
         """
@@ -224,20 +214,18 @@ class DLL:
             If `val` does not exist in DLL, return None.
         """
         # Set first node
-        curNode = self.head
+        curnode = self.head
 
         # Traverse the DLL
-        while curNode != None:
+        while curnode is not None:
             # Check if found
-            if curNode.value == val:
-                return curNode
-            # Increment curNode
-            curNode = curNode.next
+            if curnode.value == val:
+                return curnode
+            # Increment curnode
+            curnode = curnode.next
 
         # Return None if val was not found
         return None
-
-        pass
 
     def find_all(self, val: T) -> List[Node]:
         """
@@ -253,19 +241,17 @@ class DLL:
         found = []
 
         # Set first node
-        curNode = self.head
+        curnode = self.head
 
         # Traverse the DLL
-        while curNode != None:
+        while curnode is not None:
             # Check if found
-            if curNode.value == val:
-                found.append(curNode)
-            # Increment curNode
-            curNode = curNode.next
+            if curnode.value == val:
+                found.append(curnode)
+            # Increment curnode
+            curnode = curnode.next
 
         return found
-
-        pass
 
     def delete(self, val: T) -> bool:
         """
@@ -276,24 +262,22 @@ class DLL:
         :param val: value to be deleted from DLL.
         :return: True if Node containing `val` was deleted from DLL; else, False.
         """
-        delNode = self.find(val)
+        delnode = self.find(val)
 
         # Check if val was found
-        if delNode != None:
-            # Check if delNode is head and/or tail
-            if delNode is self.head:
+        if delnode is not None:
+            # Check if delnode is head and/or tail
+            if delnode is self.head:
                 self.pop(False)
-            elif delNode is self.tail:
+            elif delnode is self.tail:
                 self.pop(True)
             else:
-                delNode.prev.next = delNode.next
-                delNode.next.prev = delNode.prev
+                delnode.prev.next = delnode.next
+                delnode.next.prev = delnode.prev
                 self.size -= 1
             return True
-        else:
-            return False
-
-        pass
+        
+        return False
 
     def delete_all(self, val: T) -> int:
         """
@@ -305,12 +289,12 @@ class DLL:
         :return: integer indicating the number of Nodes containing `val` deleted from DLL;
                  if no Node containing `val` exists in DLL, return 0.
         """
-        delNodes = self.find_all(val)
-        delCount = 0
+        delnodes = self.find_all(val)
+        delcount = 0
 
-        # Traverse delNodes
-        for n in delNodes:
-            # Check if delNode is head and/or tail
+        # Traverse delnodes
+        for n in delnodes:
+            # Check if delnode is head and/or tail
             if n is self.head:
                 self.pop(False)
             elif n is self.tail:
@@ -319,11 +303,9 @@ class DLL:
                 n.prev.next = n.next
                 n.next.prev = n.prev
                 self.size -= 1
-            delCount += 1
+            delcount += 1
 
-        return delCount
-
-        pass
+        return delcount
 
     def reverse(self) -> None:
         """
@@ -336,13 +318,20 @@ class DLL:
         :return: None.
         """
         # Set first node
-        curNode = self.head
+        curnode = self.head
+
+        # Switch head and tail
+        self.head = self.tail
+        self.tail = curnode
 
         # Traverse the DLL
-            # Switch next and previous of curNode
-
-        pass
-
+        while curnode is not None:
+            # Switch next and previous of curnode
+            temp = curnode.next
+            curnode.next = curnode.prev
+            curnode.prev = temp
+            # Increment curnode
+            curnode = curnode.prev
 
 class Stock:
     """
@@ -402,4 +391,53 @@ def intellivest(stocks: DLL) -> Tuple[datetime.date, datetime.date, float]:
         [2]: float: The (positive) change in stock price between the start and end
                 dates of the streak.
     """
-    pass
+
+    # Set first node
+    curnode = stocks.head
+
+    if curnode is not None:
+        # Set initial prices
+        initprice = curnode.value.price
+        curprice = curnode.value.price
+
+        # Set max prices
+        maxinitprice = 0
+        maxcurprice = 0
+
+        # Set initial dates
+        startdate = None
+        enddate = None
+
+        # Set max days
+        maxstartdate = curnode.value.date
+        maxenddate = curnode.value.date
+    else:
+        return (None, None, 0)
+
+    # Traverse the stocks DLL
+    while curnode.next is not None:
+        if curnode.next.value.price > curprice:
+            # Increased from curnode, set up or continue a chain
+            curprice = curnode.next.value.price
+            enddate = curnode.next.value.date
+            if startdate is None:
+                startdate = curnode.value.date
+        else:
+            # Decreased from curnode, reset dates and prices
+            startdate = None
+            enddate = None
+            curprice = curnode.next.value.price
+            initprice = curnode.next.value.price
+
+        # Update max prices if needed
+        if (curprice - initprice) > (maxcurprice - maxinitprice):
+            # Broken chain was stronger than previous chain
+            maxcurprice = curprice
+            maxinitprice = initprice
+            maxstartdate = startdate
+            maxenddate = enddate
+
+        # Increment curnode
+        curnode = curnode.next
+
+    return (maxstartdate, maxenddate, maxcurprice - maxinitprice)

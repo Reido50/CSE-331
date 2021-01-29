@@ -1,7 +1,7 @@
 """
 Project 1
 CSE 331 S21 (Onsay)
-Your Name
+Reid Harry
 tests.py
 """
 
