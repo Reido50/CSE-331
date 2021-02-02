@@ -24,36 +24,47 @@ def pokemon_machine(pokemon: LinkedList, orders: List[Tuple]) -> LinkedList:
         :param cur_node: Node that will preceed the added pokemon
         :param added_pokemon: Pokemon to be added to the list
         """
-        new_node = DLLNode(added_pokemon, None, cur_node)
-        new_node.prev.nxt = new_node
+        # Create the new node
+        new_node = DLLNode(added_pokemon, None, None)
 
+        # Check if added to the back of the DLL
         if cur_node is pokemon.tail:
             pokemon.tail = new_node
         else:
+            # Link new_node and cur_node.nxt
             new_node.nxt = cur_node.nxt
             new_node.nxt.prev = new_node
-        pass
+
+        # Link cur_node and new_node
+        new_node.prev = cur_node
+        new_node.prev.nxt = new_node
 
     def remove_pokemon(cur_node: DLLNode) -> None:
         """
         Removes the pokemon at the current node
         :param cur_node: Node to be removed
         """
-        if cur_node is pokemon.head:
-            pokemon.head = cur_node.nxt
+        # If we are/aren't removing the first index
+        if cur_node is pokemon.head.nxt:
+            pokemon.head.nxt = cur_node.nxt
         else:
             cur_node.prev.nxt = cur_node.nxt
 
+        # If we are/aren't removing the last index
         if cur_node is pokemon.tail:
             pokemon.tail = cur_node.prev
         else:
             cur_node.nxt.prev = cur_node.prev
-        pass
 
     def swap_pokemon(first_node: DLLNode, second_node: DLLNode) -> None:
         """
+        Swaps the pokemon between the first and second node
+        :param first_node: The first node to swap
+        :param second_node: The second node to swap
         """
-        pass
+        temp_val = first_node.val
+        first_node.val = second_node.val
+        second_node.val = temp_val
 
     for order in orders:
         if order[0] == "add":
@@ -65,15 +76,21 @@ def pokemon_machine(pokemon: LinkedList, orders: List[Tuple]) -> LinkedList:
             add_pokemon(cur_node, order[2])
         elif order[0] == "remove":
             # Get cur_node
-            cur_node = pokemon.head
+            cur_node = pokemon.head.nxt
             for i in range(order[1]):
                 cur_node = cur_node.nxt
             # Remove the pokemon at cur_node
             remove_pokemon(cur_node)
         elif order[0] == "swap":
             # Get first node
+            first_node = pokemon.head.nxt
+            for i in range(order[1]):
+                first_node = first_node.nxt
             # Get second node
+            second_node = pokemon.head.nxt
+            for i in range(order[2]):
+                second_node = second_node.nxt
             # Swap the pokemon at the first and second node
-            print("swap")
+            swap_pokemon(first_node, second_node)
 
     return pokemon
