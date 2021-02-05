@@ -5,7 +5,7 @@ Your Name
 DLL.py
 """
 
-from Node import Node       # Import `Node` class
+from Project2.Node import Node       # Import `Node` class
 from typing import TypeVar  # For use in type hinting
 
 # Type Declarations
@@ -60,13 +60,11 @@ class RecursiveSinglyLinkList:
         if curr is None:
             # Base case: Empty list
             return "None"
-        elif curr.next is None:
+        if curr.next is None:
             # Base case: Last element
             return str(curr.val)
-        else:
-            # Recursive case
-            return str(curr.val) + " --> " + self.to_string(curr.next)
-        pass
+        # Recursive case
+        return str(curr.val) + " --> " + self.to_string(curr.next)
 
     def length(self, curr: Node) -> int:
         """
@@ -78,10 +76,8 @@ class RecursiveSinglyLinkList:
         if curr is None:
             # Base case: Empty node (last node or empty list)
             return 0
-        else:
-            # Recursive case
-            return 1 + self.length(curr.next)
-        pass
+        # Recursive case
+        return 1 + self.length(curr.next)
 
     def sum_list(self, curr: Node) -> T:
         """
@@ -93,10 +89,8 @@ class RecursiveSinglyLinkList:
         if curr is None:
             # Base case: Empty node (last node or empty list)
             return 0
-        else:
-            # Recursive case
-            return curr.val + self.sum_list(curr.next)
-        pass
+        # Recursive case
+        return curr.val + self.sum_list(curr.next)
 
     def push(self, value: T) -> None:
         """
@@ -117,17 +111,14 @@ class RecursiveSinglyLinkList:
                 # Base case: Empty list
                 self.head = newNode
                 return
-            elif curr.next is None:
+            if curr.next is None:
                 # Base case: End of list
                 curr.next = newNode
                 return
-            else:
-                # Recursive case
-                push_inner(curr.next)
-            pass
+            # Recursive case
+            push_inner(curr.next)
         # Push the new node
         push_inner(self.head)
-        pass
 
     def remove(self, value: T) -> None:
         """
@@ -145,25 +136,21 @@ class RecursiveSinglyLinkList:
             if curr.next is None:
                 # Base case: End of list
                 return
-            elif curr.next.val == value:
+            if curr.next.val == value:
                 # Base case: Found node to remove
                 curr.next = curr.next.next
                 return
-            else:
-                # Recursive case
-                remove_inner(curr.next)
-            pass
+            # Recursive case
+            remove_inner(curr.next)
         if self.head is None:
             # Empty list
             return
-        elif self.head.val == value:
+        if self.head.val == value:
             # Remove the head
             self.head = self.head.next
             return
-        else:
-            # Search the rest of the list for node to remove
-            remove_inner(self.head)
-        pass
+        # Search the rest of the list for node to remove
+        remove_inner(self.head)
 
     def remove_all(self, value: T) -> None:
         """
@@ -181,24 +168,20 @@ class RecursiveSinglyLinkList:
             if curr.next is None:
                 # Base case: End of list
                 return
-            elif curr.next.val == value:
+            if curr.next.val == value:
                 # Recursive case: Removal of Node
                 curr.next = curr.next.next
                 remove_all_inner(curr.next)
-            else:
-                # Recursive case: No removal
-                remove_all_inner(curr.next)
-            pass
+            # Recursive case: No removal
+            remove_all_inner(curr.next)
         if self.head is None:
             # Empty list
             return
-        else:
-            # Search the list for nodes to remove
-            remove_all_inner(self.head)
-            # Check if head needs to be removed
-            if self.head.val == value:
-                self.head = self.head.next
-        pass
+        # Search the list for nodes to remove
+        remove_all_inner(self.head)
+        # Check if head needs to be removed
+        if self.head.val == value:
+            self.head = self.head.next
 
     def search(self, value: T) -> bool:
         """
@@ -218,13 +201,11 @@ class RecursiveSinglyLinkList:
             if curr is None:
                 # Base case: End of list (value was not found)
                 return False
-            elif curr.val == value:
+            if curr.val == value:
                 # Base case: Found the value
                 return True
-            else:
-                # Recursive case
-                return search_inner(curr.next)
-            pass
+            # Recursive case
+            return search_inner(curr.next)
         return search_inner(self.head)
 
     def count(self, value: T) -> int:
@@ -245,13 +226,11 @@ class RecursiveSinglyLinkList:
             if curr is None:
                 # Base case: End of list
                 return 0
-            elif curr.val == value:
+            if curr.val == value:
                 # Recursive case: Node's value matches value
                 return 1 + count_inner(curr.next)
-            else:
-                # Recursive case: Node's value doesn't match value
-                return 0 + count_inner(curr.next)
-            pass
+            # Recursive case: Node's value doesn't match value
+            return 0 + count_inner(curr.next)
         return count_inner(self.head)
 
     def reverse(self, curr):
@@ -271,44 +250,42 @@ class RecursiveSinglyLinkList:
         if curr.next is None:
             # Base case: End of list
             return self.head
-        else:
-            # Recursive case
-            return self.reverse(curr)
-        pass
-
+        # Recursive case
+        return self.reverse(curr)
 
 def crafting(recipe, pockets):
     """
-    Given two linked lists, recipe and pockets, determines if the values in the recipe list are contained in the pockets list.
-    If all the values in recipe are present in pockets, they will be consumed, and therefore must be removed from pockets.
+    Given two linked lists, recipe and pockets, determines if the values in the recipe list are 
+    contained in the pockets list.
+    If all the values in recipe are present in pockets, they will be consumed, and therefore 
+    must be removed from pockets.
     :param recipe: Linked list containing all items needed for a recipe
     :param pockets: Linked list containing all items in a player's pockets
     :return: True if the item in the recipe can be crafted, false otherwise
     Time complexity: O(rp)
     """
-    match = True
+    matches = RecursiveSinglyLinkList()
     pocketsWithRemoval = RecursiveSinglyLinkList()
-    
+
     def crafting_pockets(pItem):
         if pItem is None:
             # Base case: End of list
             return
+        # Recursive case: Search for pItem in recipe
+        if recipe.search(pItem.val):
+            matches.push(1)
         else:
-            # Recursive case: Search for pItem in recipe
-            if recipe.search(pItem.val):
-                match = 
-            else:
-                pocketsWithRemoval.push(pItem.val)
-            crafting_pockets(pItem.next)
-        pass
-    
+            pocketsWithRemoval.push(pItem.val)
+            matches.push(0)
+        crafting_pockets(pItem.next)
+
     crafting_pockets(pockets.head)
-    if matches == recipe:
-        pockets = pocketsWithRemoval
-        return True
-    else:
+    if recipe.head is None:
+        # Empty recipe condition
         return False
-
-    pass
-
-
+    if matches.sum_list(matches.head) == recipe.length(recipe.head):
+        # Successful craft condition
+        pockets.head = pocketsWithRemoval.head
+        return True
+    # Unsuccessful craft condition
+    return False

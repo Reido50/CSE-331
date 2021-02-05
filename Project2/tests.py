@@ -1,6 +1,6 @@
 import unittest
-from SLL import crafting, RecursiveSinglyLinkList as RSLL
-from Node import Node
+from Project2.SLL import crafting, RecursiveSinglyLinkList as RSLL
+from Project2.Node import Node
 import random
 
 
