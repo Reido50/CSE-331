@@ -126,9 +126,8 @@ class DLL:
             # Determine if front or back
             if back:
                 # Append node to the tail
-                self.tail.next = newnode
+                self.tail.next = self.tail = newnode
                 newnode.prev = self.tail
-                self.tail = newnode
             else:
                 # Prepend node to the head
                 self.head.prev = newnode
@@ -441,3 +440,9 @@ def intellivest(stocks: DLL) -> Tuple[datetime.date, datetime.date, float]:
         curnode = curnode.next
 
     return (maxstartdate, maxenddate, maxcurprice - maxinitprice)
+
+dll = DLL()
+for i in range(10):
+    dll.push(i , True)
+print(dll.head)
+print(dll.tail)
