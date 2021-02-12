@@ -9,8 +9,10 @@ from typing import List
 
 def finding_best_bot(bots_list: List[int]) -> int:
     """
-    Finds and returns the index in a given list where the data goes from increasing to decreasing
-    :param bots_list: List of integers that contains data is increases and possible decreases afterward
+    Finds and returns the index in a given list where the data goes from
+    increasing to decreasing
+    :param bots_list: List of integers that contains data is increases and
+    possible decreases afterward
     :return: Index of the numerically greatest point in the data set
     """
 
@@ -23,13 +25,17 @@ def finding_best_bot(bots_list: List[int]) -> int:
         :return: Index of the numerically greatest point in the data set
         """
         if start == end:
-            return start
+            # Base case: Found the best bot
+            return start + 1
 
+        # Calculate middle element
         mid = (start + end) // 2
 
+        # Best bot is in second half of the list
         if bots_list[mid] < bots_list[mid+1]:
             return finding_best_bot_helper(mid+1, end)
-        else:
-            return finding_best_bot_helper(start, mid-1)
+
+        # Best bot is in first half of the list
+        return finding_best_bot_helper(start, mid)
 
     return finding_best_bot_helper(0, len(bots_list)-1)
