@@ -32,17 +32,21 @@ def merge_sort(data: List[T], threshold: int = 0,
         i = j = 0
         while i+j < len(S):
             if j == len(S2) or (i < len(S1) and S1[i] < S2[j]):
+                if j <= i:
+                    inversions += 1
                 S[i+j] = S1[i]
                 i = i+1
             else:
+                if i > j:
+                    inversions += 1
                 S[i+j] = S2[j]
                 j = j+1
-                inversions += 1
+
         return inversions
     
     n = len(data)
     if n < 2:
-        return
+        return 0
     elif n < threshold:
         insertion_sort(data, comparator)
     mid = n // 2
@@ -102,6 +106,6 @@ def password_sort(data: List[str]) -> None:
     pass
 
 
-data = [7, 4, 1, 0, 8, 9, 3, 2, 12]
+data = [3, 2, 9, 0]
 print(str(merge_sort(data)))
 print(data)
