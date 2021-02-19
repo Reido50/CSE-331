@@ -7,6 +7,7 @@ CSE 331 Spring 2021
 Professor Sebnem Onsay
 """
 from typing import TypeVar, List, Callable
+import math
 
 T = TypeVar("T")            # represents generic type
 
@@ -106,10 +107,14 @@ def password_rate(password: str) -> float:
     """
     REPLACE
     """
-    pass
+    charSet = set()
+    for c in password:
+        charSet.add(c)
+    return math.sqrt(len(password)) * math.sqrt(len(charSet)) * inversions_count(password)
 
 def password_sort(data: List[str]) -> None:
     """
     REPLACE
     """
     pass
+
