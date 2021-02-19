@@ -18,6 +18,7 @@ def merge_sort(data: List[T], threshold: int = 0,
     :param data: List of items to be sorted
     :param threshold: The size of the data at which insertion sort should be used
     :param comparator: A function that compares two arguments and returns True if the first argument is less than or equal to the second and False otherwise
+    :return: Number of inversions (only accurate if threshold is 0)
     """
     inversions = 0
 
@@ -31,17 +32,13 @@ def merge_sort(data: List[T], threshold: int = 0,
         inversions = 0
         i = j = 0
         while i+j < len(S):
-            if j == len(S2) or (i < len(S1) and S1[i] < S2[j]):
-                if j <= i:
-                    inversions += 1
+            if j == len(S2) or (i < len(S1) and comparator(S1[i], S2[j])):
                 S[i+j] = S1[i]
                 i = i+1
             else:
-                if i > j:
-                    inversions += 1
                 S[i+j] = S2[j]
                 j = j+1
-
+                inversions += (len(S1)-i)
         return inversions
     
     n = len(data)
@@ -49,13 +46,15 @@ def merge_sort(data: List[T], threshold: int = 0,
         return 0
     elif n < threshold:
         insertion_sort(data, comparator)
-    mid = n // 2
-    S1 = data[0:mid]
-    S2 = data[mid:n]
-    inversions += merge_sort(S1)
-    inversions += merge_sort(S2)
-    inversions += merge(S1, S2, data)
+    else:
+        mid = n // 2
+        S1 = data[0:mid]
+        S2 = data[mid:n]
+        inversions += merge_sort(S1, threshold, comparator)
+        inversions += merge_sort(S2, threshold, comparator)
+        inversions += merge(S1, S2, data)
     return inversions
+
 
 def insertion_sort(data: List[T], comparator: Callable[[T, T], bool] = lambda x, y: x <= y) -> None:
     """
@@ -75,21 +74,31 @@ def insertion_sort(data: List[T], comparator: Callable[[T, T], bool] = lambda x,
 def hybrid_sort(data: List[T], threshold: int,
                 comparator: Callable[[T, T], bool] = lambda x, y: x <= y) -> None:
     """
-    REPLACE
+    Hybrid sorting algorthm using merge sort until a certain threshold, then insertion sort
+    :param data: List to be sorted
+    :param threshold: Amount of elements at which to switch to insertion sort
+    :param comparator: A function that compares two arguments and returns True if the first argument is less than or equal to the second and False otherwise
     """
+    merge_sort(data, threshold, comparator)
     pass
 
 def inversions_count(data: List[T]) -> int:
     """
-    REPLACE
+    Uses merge sort and a copy of the data to return how many inversions it would take to sort it
+    :param data: List to be used in determining number of inversions
+    :return: Number of inversions
     """
-    pass
+    temp = data.copy()
+    return merge_sort(temp)
 
 
 def reverse_sort(data: List[T], threshold: int) -> None:
     """
-    REPLACE
+    Sorts a list in reverse using a hybrid sorting algorithm
+    :param data: List to be sorted in reverse
+    :param threshold: Amount of elements at which to switch to insertion sort
     """
+    hybrid_sort(data, threshold, comparator = lambda x,y : x >= y)
     pass
 
 
@@ -104,8 +113,3 @@ def password_sort(data: List[str]) -> None:
     REPLACE
     """
     pass
-
-
-data = [3, 2, 9, 0]
-print(str(merge_sort(data)))
-print(data)
