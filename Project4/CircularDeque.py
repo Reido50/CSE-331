@@ -1,7 +1,7 @@
 """
 Project 4
 CSE 331 S21 (Onsay)
-Name
+Reid Harry
 CircularDeque.py
 """
 
@@ -65,19 +65,48 @@ class CircularDeque:
     # ============ Modify below ============ #
 
     def __len__(self) -> int:
-        pass
+        """
+        Returns the number of items in the deque
+        :return: Number of items in the deque
+        """
+        return self.size
 
     def is_empty(self) -> bool:
-        pass
+        """
+        Returns true if the deque has no items in it
+        :return: True if the deque is empty
+        """
+        return self.size == 0
 
     def front_element(self) -> T:
-        pass
+        """
+        Returns the front item of the deque
+        :return: Front item of the deque
+        """
+        if self.front is not None:
+            return self.queue[self.front]
+        return None
 
     def back_element(self) -> T:
-        pass
+        """
+        Returns the back item of the deque
+        :return: Back item of the deque
+        """
+        if self.back is not None:
+            return self.queue[self.back]
+        return None
 
     def front_enqueue(self, value: T) -> None:
-        pass
+        """
+        Adds a value to the front of the deque
+        :param value: Value to be added to the deque
+        """
+        if self.front is None:
+            
+        self.grow()
+        self.front += 1
+        self.queue[self.front] = value
+        self.size += 1
 
     def back_enqueue(self, value: T) -> None:
         pass
@@ -89,7 +118,25 @@ class CircularDeque:
         pass
 
     def grow(self) -> None:
-        pass
+        
+        """
+        Doubles the capacity of the deque if the size is equal 
+        to the current capacity
+        """
+        if self.capacity == self.size:
+            newQueue = [self.queue[self.front]]
+            oldFront = self.front
+            self.front += 1
+            while self.front != oldFront:
+                if self.front == self.capacity:
+                    self.front = 0
+                newQueue.append(self.queue[self.front])
+                self.front += 1
+            self.front = 0
+            self.back = self.capacity-1
+            newQueue.extend([None]*self.capacity)
+            self.queue = newQueue
+            self.capacity *= 2
 
     def shrink(self) -> None:
         pass
