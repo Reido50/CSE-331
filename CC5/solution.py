@@ -14,39 +14,25 @@ def check_walls_cover(walls: List[int]) -> List[int]:
     output = [0] * len(walls)
 
     # Find all seen walls from the left
-    leftStack = []
-    leftOut = [0] * len(walls)
+    left = []
     for i in range(len(walls)):
-        if not leftStack:
-            leftStack.append(walls[i])
+        if not left:
+            left.append(walls[i])
         else:
-            if walls[i] > leftStack[len(leftStack)-1]:
-                leftStack.pop()
-                leftOut[i] += len(leftStack)
-            else:
-                leftStack.pop()
-                leftOut[i] += leftOut[i-1]+1
-            leftStack.append(walls[i])
+            while left and walls[i] >= left[len(left)-1]:
+                left.pop()
+            output[i] += len(left)
+            left.append(walls[i])
 
     # Find all seen walls from the right
-    rightStack = []
-    rightOut = [0] * len(walls)
-    for i in range(len(walls)-1, -1, -1):
-        if not rightStack:
-            rightStack.append(walls[i])
+    right = []
+    for i in range(len(walls) - 1, -1, -1):
+        if not right:
+            right.append(walls[i])
         else:
-            if walls[i] > rightStack[len(rightStack)-1]:
-                rightStack.pop()
-                rightOut[i] += len(rightStack)
-            else:
-                rightStack.pop()
-                rightOut[i] += rightOut[i+1]+1
-            rightStack.append(walls[i])
-
-    for i in range(len(walls)):
-        output[i] = leftOut[i] + rightOut[i]
+            while right and walls[i] >= right[len(right)-1]:
+                right.pop()
+            output[i] += len(right)
+            right.append(walls[i])
 
     return output
-
-test = [5, 2, 1, 10, 8, 4, 11]
-print(str(check_walls_cover(test)))
