@@ -83,7 +83,7 @@ class CircularDeque:
         Returns the front item of the deque
         :return: Front item of the deque
         """
-        if self.front is not None:
+        if self.size != 0:
             return self.queue[self.front]
         return None
 
@@ -92,7 +92,7 @@ class CircularDeque:
         Returns the back item of the deque
         :return: Back item of the deque
         """
-        if self.back is not None:
+        if self.size != 0:
             return self.queue[self.back]
         return None
 
@@ -101,55 +101,171 @@ class CircularDeque:
         Adds a value to the front of the deque
         :param value: Value to be added to the deque
         """
-        if self.front is None:
-            
-        self.grow()
-        self.front += 1
+        if self.size == 0:
+            self.front = 1
+            self.back = 0
+        self.front -= 1
+        if self.front < 0:
+            self.front = self.front + self.capacity
         self.queue[self.front] = value
         self.size += 1
+        self.grow()
 
     def back_enqueue(self, value: T) -> None:
-        pass
+        """
+        Adds a value to the back of the deque
+        :param value: Value to be added to the deque
+        """
+        if self.size == 0:
+            self.front = 0
+            self.back = -1
+        self.back += 1
+        if self.back >= self.capacity:
+            self.back = 0
+        self.queue[self.back] = value
+        self.size += 1
+        self.grow()
 
     def front_dequeue(self) -> T:
-        pass
+        """
+        Removes the item at the front of the circular queue
+        :return: Item at the front of the circular queue, None if empty
+        """
+        if self.size == 0:
+            return None
+        rem = self.queue[self.front]
+        self.front += 1
+        if self.front >= self.capacity:
+            self.front = 0
+        self.size -= 1
+        self.shrink()
+        return rem
 
     def back_dequeue(self) -> T:
-        pass
+        """
+        Removes the item at the back of the circular queue
+        :return: Item at the back of the circular queue, None if empty
+        """
+        if self.size == 0:
+            return None
+        rem = self.queue[self.back]
+        self.back -= 1
+        if self.back < 0:
+            self.back = self.capacity-1
+        self.size -= 1
+        self.shrink()
+        return rem
 
     def grow(self) -> None:
-        
         """
-        Doubles the capacity of the deque if the size is equal 
+        Doubles the capacity of the deque if the size is equal
         to the current capacity
         """
         if self.capacity == self.size:
-            newQueue = [self.queue[self.front]]
-            oldFront = self.front
+            newqueue = [self.queue[self.front]]
+            oldfront = self.front
             self.front += 1
-            while self.front != oldFront:
+            while self.front != oldfront:
                 if self.front == self.capacity:
                     self.front = 0
-                newQueue.append(self.queue[self.front])
-                self.front += 1
+                else:
+                    newqueue.append(self.queue[self.front])
+                    self.front += 1
             self.front = 0
             self.back = self.capacity-1
-            newQueue.extend([None]*self.capacity)
-            self.queue = newQueue
+            newqueue.extend([None]*self.capacity)
+            self.queue = newqueue
             self.capacity *= 2
 
     def shrink(self) -> None:
-        pass
+        """
+        Halves the capacity of the queue if needed
+        """
+        if self.size <= (self.capacity//4) and (self.capacity//2) >= 4:
+            newqueue = [None] * (self.capacity//2)
+            i = 0
+            newqueue[i] = self.queue[self.front]
+            self.front += 1
+            i += 1
+            while self.front != self.back+1:
+                if self.front == self.capacity:
+                    self.front = 0
+                else:
+                    newqueue[i] = self.queue[self.front]
+                    self.front += 1
+                    i += 1
+            self.front = 0
+            self.back = self.size - 1
+            self.queue = newqueue
+            self.capacity //= 2
 
 
-def LetsPassTrains102(infix : str) -> str:
+def LetsPassTrains102(infix: str) -> str:
 
     """
+    Converts an equation of infix to postfix and outputs the result
+    :param infix: Expression in infix
+    :return: Tuple containing evaluated expression and the postfix expression
+    """
+    if infix == "":
+        return (0, "")
+
+    postfix = CircularDeque()
+    output = ""
     regex = r"\-*\d+\.\d+|\-\d+|[\(\)\-\^\*\+\/]|(?<!-)\d+|\w"
     ops = {'*': 3, '/': 3,  # key: operator, value: precedence
            '+': 2, '-': 2,
            '^': 4,
            '(': 0}  # '(' is lowest bc must be closed by ')'
-    """
 
-    pass
+    symbols = re.findall(regex, infix)
+
+    for s in symbols:
+        if ops.get(s) is None:
+            if s == ")":
+                while ops[postfix.back_element()] != 0:
+                    output += postfix.back_dequeue()
+                    output += " "
+                postfix.back_dequeue()
+            else:
+                output += s
+                output += " "
+        elif ops[s] == 0:
+            postfix.back_enqueue(s)
+        else:
+            while (postfix.size != 0) and (ops[postfix.back_element()] >= ops[s]):
+                output += postfix.back_dequeue()
+                output += " "
+            postfix.back_enqueue(s)
+    while not postfix.is_empty():
+        output += postfix.back_dequeue()
+        output += " "
+    output = output[0:-1]
+
+    evaluation = CircularDeque()
+    postnums = re.findall(regex, output)
+    for c in postnums:
+        if c == "+":
+            op1 = float(evaluation.back_dequeue())
+            op2 = float(evaluation.back_dequeue())
+            evaluation.back_enqueue(op1 + op2)
+        elif c == "-":
+            op1 = float(evaluation.back_dequeue())
+            op2 = float(evaluation.back_dequeue())
+            evaluation.back_enqueue(op2 - op1)
+        elif c == "*":
+            op1 = float(evaluation.back_dequeue())
+            op2 = float(evaluation.back_dequeue())
+            evaluation.back_enqueue(op1 * op2)
+        elif c == "/":
+            op1 = float(evaluation.back_dequeue())
+            op2 = float(evaluation.back_dequeue())
+            evaluation.back_enqueue(op1 / op2)
+        elif c == "^":
+            op1 = float(evaluation.back_dequeue())
+            op2 = float(evaluation.back_dequeue())
+            evaluation.back_enqueue(op1 ** op2)
+        else:
+            evaluation.back_enqueue(float(c))
+
+    return (evaluation.back_dequeue(), output)
