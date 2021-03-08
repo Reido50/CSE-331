@@ -9,9 +9,9 @@ tests.py
 import unittest
 import random
 import types
-import numpy as np
-import matplotlib.pyplot as plt
-from Project5.AVLTree import Node, AVLTree, AVLWrappedDictionary, NearestNeighborClassifier
+#import numpy as np
+#import matplotlib.pyplot as plt
+from AVLTree import Node, AVLTree, AVLWrappedDictionary, NearestNeighborClassifier
 
 
 class AVLTreeTests(unittest.TestCase):

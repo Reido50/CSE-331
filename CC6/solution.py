@@ -1,5 +1,5 @@
 """
-Name:
+Name: Reid Harry
 Coding Challenge 6
 CSE 331 Spring 2021
 Professor Sebnem Onsay

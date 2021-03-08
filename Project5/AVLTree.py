@@ -193,9 +193,38 @@ class AVLTree:
 
     def right_rotate(self, root: Node) -> Node:
         """
-        REPLACE
+        Perform a right rotation on the subtree rooted at 'root'. Return new subtree root
+
+        :param root: root node of unbalanced subtree to be rotated.
+        :return: new root node of subtree following rotation.
         """
-        pass
+        if root is None:
+            return None
+
+        # pull left child up and shift left-right child across tree, update parent
+        new_root, rl_child = root.left, root.left.right
+        root.left = rl_child
+        if rl_child is not None:
+            rl_child.parent = root
+
+        # left child has been pulled up to new root -> push old root down right, update parent
+        new_root.right = root
+        new_root.parent = root.parent
+        if root.parent is not None:
+            if root is root.parent.right:
+                root.parent.right = new_root
+            else:
+                root.parent.left = new_root
+        root.parent = new_root
+
+        # handle tree origin case
+        if root is self.origin:
+            self.origin = new_root
+
+        # update heights and return new root of subtree
+        root.height = 1 + max(self.height(root.left), self.height(root.right))
+        new_root.height = 1 + max(self.height(new_root.left), self.height(new_root.right))
+        return new_root
 
     def balance_factor(self, root: Node) -> int:
         """
@@ -211,21 +240,36 @@ class AVLTree:
 
     def insert(self, root: Node, val: T) -> Node:
         """
-        REPLACE
+        Insert a node with val into the subtree rooted at root
+        :param root: Root of the subtree in which the node with val will be inserted
+        :param val: Value for the inserted node
+        :return: Root of the subtree after insertion and rebalancing
         """
         pass
 
     def min(self, root: Node) -> Node:
         """
-        REPLACE
+        Find and return the Node with the smallest value in the subtree rooted at root
+        :param root: Root node of the subtree in which to search for a min
+        :return: Node with the smallest value in the subtree
         """
-        pass
+        if root is None:
+            return None
+        if root.left is None:
+            return root
+        return min(root.left)
 
     def max(self, root: Node) -> Node:
         """
-        REPLACE
+        Find and return the Node with the largest value in the subtree rooted at root
+        :param root: Root node of the subtree in which to search for a max
+        :return: Node with the largest value in the subtree
         """
-        pass
+        if root is None:
+            return None
+        if root.right is None:
+            return root
+        return max(root.right)
 
     def search(self, root: Node, val: T) -> Node:
         """
