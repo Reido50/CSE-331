@@ -228,15 +228,67 @@ class AVLTree:
 
     def balance_factor(self, root: Node) -> int:
         """
-        REPLACE
+        Computer balance factor of the subtree rooted at root
+        :param root: The root Node of the subtree on which to compute the balance factor
+        :return: int representing the balance factor of root
         """
-        pass
+        # Check for root of none
+        if root is None:
+            return 0
+        
+        # Find heights of right and left subtree
+        left_height = -1
+        right_height = -1
+        if root.left is not None:
+            left_height = root.left.height
+        if root.right is not None:
+            right_height = root.right.height
+
+        # Compute and return balance factor
+        return left_height - right_height
+
 
     def rebalance(self, root: Node) -> Node:
         """
-        REPLACE
+        Rebalance the subtree rooted at root and return the new root of the resulting subtree
+        :param root: Root of the subtree in which to rebalance
+        :return: Root of new subtree after rebalancing
         """
-        pass
+        def rightcase() -> Node:
+            if self.balance_factor(root.right) < 0:
+                # Right Left case
+                self.right_rotate(root.right)
+                return self.left_rotate(root)
+            else:
+                # Right Right case
+                return self.left_rotate(root)
+
+        def leftcase():
+            if self.balance_factor(root.left) < 0:
+                # Left Right case
+                self.left_rotate(root.left)
+                return self.right_rotate(root)
+            else:
+                # Left Left case
+                return self.right_rotate(root)
+
+
+        # Check if the subtree doesn't need rebalancing
+        if abs(self.balance_factor(root)) < 2:
+            return root
+        
+        new_root = None
+        if root.left is None:
+            new_root = rightcase()
+        elif root.right is None:
+            new_root = leftcase()
+        elif root.right.height > root.left.height:
+            new_root = rightcase()
+        else:
+            new_root = leftcase()
+
+        return new_root
+
 
     def insert(self, root: Node, val: T) -> Node:
         """
@@ -253,8 +305,11 @@ class AVLTree:
         :param root: Root node of the subtree in which to search for a min
         :return: Node with the smallest value in the subtree
         """
+        # Check for root of none
         if root is None:
             return None
+
+        # If there is not a left child, return itself
         if root.left is None:
             return root
         return min(root.left)
@@ -265,8 +320,11 @@ class AVLTree:
         :param root: Root node of the subtree in which to search for a max
         :return: Node with the largest value in the subtree
         """
+        # Check for root of none
         if root is None:
             return None
+
+        # If there is not a right child, return itself
         if root.right is None:
             return root
         return max(root.right)
