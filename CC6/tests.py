@@ -1,6 +1,6 @@
 import unittest
 import random
-from CC6.solution import gates_needed
+from solution import gates_needed
 
 
 class CC6Tests(unittest.TestCase):
