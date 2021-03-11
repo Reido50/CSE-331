@@ -255,7 +255,11 @@ class AVLTree:
         :return: Root of new subtree after rebalancing
         """
         def rightcase() -> Node:
-            if self.balance_factor(root.right) < 0:
+            """
+            Do a Right-Right or Right-Left rotation
+            :return: New root of the subtree
+            """
+            if self.balance_factor(root.right) > 0:
                 # Right Left case
                 self.right_rotate(root.right)
                 return self.left_rotate(root)
@@ -263,7 +267,11 @@ class AVLTree:
                 # Right Right case
                 return self.left_rotate(root)
 
-        def leftcase():
+        def leftcase() -> Node:
+            """
+            Do a Left-Left or Left-Right rotation
+            :return: New root of the subtree
+            """
             if self.balance_factor(root.left) < 0:
                 # Left Right case
                 self.left_rotate(root.left)
@@ -274,9 +282,10 @@ class AVLTree:
 
 
         # Check if the subtree doesn't need rebalancing
-        if abs(self.balance_factor(root)) < 2:
+        if abs(self.balance_factor(root)) <= 1:
             return root
         
+        # Determine if it's a left case or right case
         new_root = None
         if root.left is None:
             new_root = rightcase()
@@ -297,7 +306,37 @@ class AVLTree:
         :param val: Value for the inserted node
         :return: Root of the subtree after insertion and rebalancing
         """
-        pass
+        # Check if empty
+        if self.origin is None:
+            self.origin = Node(val)
+            self.size += 1
+            return self.origin
+
+        if val > root.value:
+            # Try to insert into right
+            if root.right is None:
+                # Base case: Inserted into right
+                root.right = Node(val, root)
+                self.size += 1
+            else:
+                # Recursive case: Search right
+                self.insert(root.right, val)
+        elif val < root.value:
+            # Try to insert into left
+            if root.left is None:
+                # Base case: Inserted into left
+                root.left = Node(val, root)
+                self.size += 1
+            else:
+                # Recursive case: Search left
+                self.insert(root.left, val)
+        else:
+            return self.rebalance(root)
+
+        # Update height
+        root.height = 1 + max(self.height(root.right), self.height(root.left))
+        # Rebalance the ancestors
+        return self.rebalance(root)
 
     def min(self, root: Node) -> Node:
         """
@@ -312,7 +351,7 @@ class AVLTree:
         # If there is not a left child, return itself
         if root.left is None:
             return root
-        return min(root.left)
+        return self.min(root.left)
 
     def max(self, root: Node) -> Node:
         """
@@ -327,13 +366,30 @@ class AVLTree:
         # If there is not a right child, return itself
         if root.right is None:
             return root
-        return max(root.right)
+        return self.max(root.right)
 
     def search(self, root: Node, val: T) -> Node:
         """
-        REPLACE
+        Find and return the Node with the largest value in the subtree rooted at root
+        If not found, return the Node below which val would be inserted as a child
+        :param root: The root Node of the subtree to search
+        :param val: The value being searched in the subtree
         """
-        pass
+        # Check for root of none
+        if root is None:
+            return None
+
+        # Determine whether val is left or right
+        if val > root.value:
+            if root.right is None:
+                return root
+            return self.search(root.right, val)
+        elif val < root.value:
+            if root.left is None:
+                return root
+            return self.search(root.left, val)
+        else:
+            return root
 
     def inorder(self, root: Node) -> Generator[Node, None, None]:
         """
