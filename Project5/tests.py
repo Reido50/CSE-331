@@ -1632,6 +1632,8 @@ class AVLTreeTests(unittest.TestCase):
                         inserted = chr(ord('a') + random.randint(0, 25))
                 else:
                     inserted = random.randint(0, 100000)
+                    if inserted == 218:
+                        print("weeeee")
                 avl.insert(avl.origin, inserted)
                 existing_value[inserted] = 1
             else:
@@ -1679,6 +1681,8 @@ class AVLTreeTests(unittest.TestCase):
         existing_value.clear()
         avl = AVLTree()
         for _ in range(1200):
+            if _ > 920:
+                print("EZ")
             random_order_1(character=False)
         self.assertEqual(218, avl.min(avl.origin).value)
         self.assertEqual(99893, avl.max(avl.origin).value)

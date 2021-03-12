@@ -247,7 +247,6 @@ class AVLTree:
         # Compute and return balance factor
         return left_height - right_height
 
-
     def rebalance(self, root: Node) -> Node:
         """
         Rebalance the subtree rooted at root and return the new root of the resulting subtree
@@ -297,7 +296,6 @@ class AVLTree:
             new_root = leftcase()
 
         return new_root
-
 
     def insert(self, root: Node, val: T) -> Node:
         """
@@ -374,6 +372,7 @@ class AVLTree:
         If not found, return the Node below which val would be inserted as a child
         :param root: The root Node of the subtree to search
         :param val: The value being searched in the subtree
+        :return: Node containing val if it exists, else the Node object below which val would be inserted as a child
         """
         # Check for root of none
         if root is None:
@@ -393,33 +392,204 @@ class AVLTree:
 
     def inorder(self, root: Node) -> Generator[Node, None, None]:
         """
-        REPLACE
+        Perform an inorder traversal of the subtree rooted at root
+        :param root: The root Node of the subtree currently being traversed
+        :return: Generator object which yields Node objects only
         """
-        pass
+        if root is None:
+            return
+        # Check left
+        if root.left is not None:
+            yield from self.inorder(root.left)
+        # Return current if no more left to go
+        yield root
+        # Check right
+        if root.right is not None:
+            yield from self.inorder(root.right)
+            
 
     def preorder(self, root: Node) -> Generator[Node, None, None]:
         """
-        REPLACE
+        Perform a preorder traversal of the subtree rooted at root
+        :param root: The root Node of the subtree currently being traversed
+        :return: Generator object which yields Node objects only
         """
-        pass
+        if root is None:
+            return
+        # Return current
+        yield root
+        # Check left
+        if root.left is not None:
+            yield from self.preorder(root.left)
+        # Check right
+        if root.right is not None:
+            yield from self.preorder(root.right)
 
     def postorder(self, root: Node) -> Generator[Node, None, None]:
         """
-        REPLACE
+        Perform a postorder traversal of the subtree rooted at root
+        :param root: The root Node of the subtree currently being traversed
+        :return: Generator object which yields Node objects only
         """
-        pass
+        if root is None:
+            return
+        # Check left
+        if root.left is not None:
+            yield from self.postorder(root.left)
+        # Check right
+        if root.right is not None:
+            yield from self.postorder(root.right)
+        # Return current after left and right
+        yield root
 
     def levelorder(self, root: Node) -> Generator[Node, None, None]:
         """
-        REPLACE
+        Perform a level-order traversal of the subtree rooted at root
+        :param root: The root Node of the subtree being traversed
+        :return: Generator object which yields Node objects only
         """
-        pass
+        if root is None:
+            return
+
+        yield root
+
+        q = queue.SimpleQueue()
+        q.put(root)
+
+        while not q.empty():
+            cur = q.get()
+            if cur.left is not None:
+                yield cur.left
+                q.put(cur.left)
+            if cur.right is not None:
+                yield cur.right
+                q.put(cur.right)
+        return
 
     def remove(self, root: Node, val: T) -> Node:
         """
-        REPLACE
+        Removes the node with value val from the subtree rooted at root and returns the root
+        :param root: The root Node of the subtree from which to delete val
+        :return: Root of new subtree after removal and rebalancing (could be the original root)
         """
-        pass
+        # Check if empty
+        if self.origin is None:
+            return self.origin
+
+        if val > root.value:
+            # Try to insert into right
+            if root.right is None:
+                # Base case: Doesn't exist
+                return self.rebalance(root)
+            else:
+                if root.right.value == val:
+                    # Remove right
+                    if root.right.right is None and root.right.left is None:
+                        # Remove leaf
+                        root.right.parent = None
+                        root.right = None
+                    elif root.right.right is None and root.right.left is not None:
+                        # Remove node with one left child
+                        root.right = root.right.left
+                        root.right.parent.left = None
+                        root.right.parent = root
+                    elif root.right.right is not None and root.right.left is None:
+                        # Remove node with one right child
+                        root.right = root.right.right
+                        root.right.parent.right = None
+                        root.right.parent = root
+                    else:
+                        # Remove node with two children
+                        predecessor = self.max(root.right.left)
+                        root.right.value = predecessor.value
+                        self.remove(root.right, predecessor.value)
+                        self.size += 1
+                    self.size -= 1
+                else:
+                    # Recursive case: Search right
+                    self.remove(root.right, val)
+            # Update height
+            root.height = max(self.height(root.right), self.height(root.left) + 1)
+        elif val < root.value:
+            # Try to insert into left
+            if root.left is None:
+                # Base case: Doesn't exist
+                return self.rebalance(root)
+            else:
+                if root.left.value == val:
+                    # Remove left
+                    if root.left.right is None and root.left.left is None:
+                        # Remove leaf
+                        root.left.parent = None
+                        root.left = None
+                    elif root.left.right is None and root.left.left is not None:
+                        # Remove node with one left child
+                        root.left = root.left.left
+                        root.left.parent.left = None
+                        root.left.parent = root
+                    elif root.left.right is not None and root.left.left is None:
+                        # Remove node with one right child
+                        root.left = root.left.right
+                        root.left.parent.right = None
+                        root.left.parent = root
+                    else:
+                        # Remove node with two children
+                        predecessor = self.max(root.left.left)
+                        root.left.value = predecessor.value
+                        self.remove(root.left, predecessor.value)
+                        self.size += 1
+                    self.size -= 1
+                else:
+                    # Recursive case: Search left
+                    self.remove(root.left, val)
+            # Update height
+            root.height = max(self.height(root.right) + 1, self.height(root.left))
+        else:
+            # Remove origin
+            if root.right is None and root.left is None:
+                # Remove leaf
+                if root.parent is not None:
+                    root.parent.left = None
+                else:
+                    self.origin = None
+                root = None
+            elif root.right is None and root.left is not None:
+                # Remove node with one left child
+                root = root.left
+                self.origin = root
+                root.parent.left = None
+                root.parent = None
+            elif root.right is not None and root.left is None:
+                # Remove node with one right child
+                root = root.right
+                self.origin = root
+                root.parent.right = None
+                root.parent = None
+            else:
+                # Remove node with two children
+                predecessor = self.max(root.left)
+                root.value = predecessor.value
+                self.remove(root.left, predecessor.value)
+                self.size += 1
+            self.size -= 1
+
+        # Rebalance the ancestors
+        return self.rebalance(root)
+
+
+avl = AVLTree()
+avl.insert(avl.origin, 0)
+avl.insert(avl.origin, 1)
+avl.insert(avl.origin, 2)
+avl.insert(avl.origin, 3)
+
+print(str(avl.origin))
+print(str(avl.origin.left))
+print(str(avl.origin.right))
+print()
+print(str(avl.remove(avl.origin, 3)))
+print(str(avl.origin.left))
+print(str(avl.origin.right))
 
 
 ####################################################################################################
@@ -537,12 +707,49 @@ class NearestNeighborClassifier:
 
     def fit(self, data: List[Tuple[float, str]]) -> None:
         """
-        REPLACE
+        Fits the one-dimensional NearestNeighborClassifier to data
+        :param data: A list of (float,str) pairs associating feature x values in the range [0, 1] to target y values.
         """
-        pass
+        # Iterate through the list
+        for tup in data:
+            # Round x to the number of digits specified by self.resolution
+            rounded = round(tup[0], self.resolution)
+            searchterm = AVLWrappedDictionary(rounded)
+            node = self.tree.search(self.tree.origin, searchterm)
+            if node.value.dictionary.get(tup[1]) is None:
+                node.value.dictionary[tup[1]] = 1
+            else:
+                node.value.dictionary[tup[1]] += 1
+
 
     def predict(self, x: float, delta: float) -> str:
         """
-        REPLACE
+        Predicts the class label of a single x value
+        :param x: Feature value in range [0, 1] with unknown class to be predicted
+        :param delta: Width of interval to search across for neighbors of x
+        :return: str of the predicted class label y
         """
-        pass
+        rounded = round(x, self.resolution)
+        count = {}
+        searchnum = max(rounded - delta, 0)
+        while searchnum <= min(rounded + delta, 1):
+            searchterm = AVLWrappedDictionary(searchnum)
+            found = self.tree.search(self.tree.origin, searchterm)
+            if found is not None:
+                if found.value == searchterm:
+                    for key in found.value.dictionary:
+                        if count.get(key) is None:
+                            count[key] = found.value.dictionary[key]
+                        else:
+                            count[key] += found.value.dictionary[key]
+            searchnum += pow(0.1, self.resolution)
+        if len(count) == 0:
+            return None
+        else:
+            maxclass = "null"
+            maxnum = -1
+            for key in count:
+                if count[key] > maxnum:
+                    maxclass = key
+                    maxnum = count[key]
+            return maxclass
