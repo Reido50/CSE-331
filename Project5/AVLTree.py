@@ -473,107 +473,51 @@ class AVLTree:
         :return: Root of new subtree after removal and rebalancing (could be the original root)
         """
         # Check if empty
-        if self.origin is None:
-            return self.origin
+        if root is None:
+            return root
 
-        if val > root.value:
-            # Try to insert into right
-            if root.right is None:
-                # Base case: Doesn't exist
-                return self.rebalance(root)
-            else:
-                if root.right.value == val:
-                    # Remove right
-                    if root.right.right is None and root.right.left is None:
-                        # Remove leaf
-                        root.right.parent = None
-                        root.right = None
-                    elif root.right.right is None and root.right.left is not None:
-                        # Remove node with one left child
-                        root.right = root.right.left
-                        root.right.parent.left = None
-                        root.right.parent = root
-                    elif root.right.right is not None and root.right.left is None:
-                        # Remove node with one right child
-                        root.right = root.right.right
-                        root.right.parent.right = None
-                        root.right.parent = root
-                    else:
-                        # Remove node with two children
-                        predecessor = self.max(root.right.left)
-                        root.right.value = predecessor.value
-                        self.remove(root.right, predecessor.value)
-                        self.size += 1
-                    self.size -= 1
-                else:
-                    # Recursive case: Search right
-                    self.remove(root.right, val)
-            # Update height
-            root.height = max(self.height(root.right), self.height(root.left) + 1)
-        elif val < root.value:
-            # Try to insert into left
-            if root.left is None:
-                # Base case: Doesn't exist
-                return self.rebalance(root)
-            else:
-                if root.left.value == val:
-                    # Remove left
-                    if root.left.right is None and root.left.left is None:
-                        # Remove leaf
-                        root.left.parent = None
-                        root.left = None
-                    elif root.left.right is None and root.left.left is not None:
-                        # Remove node with one left child
-                        root.left = root.left.left
-                        root.left.parent.left = None
-                        root.left.parent = root
-                    elif root.left.right is not None and root.left.left is None:
-                        # Remove node with one right child
-                        root.left = root.left.right
-                        root.left.parent.right = None
-                        root.left.parent = root
-                    else:
-                        # Remove node with two children
-                        predecessor = self.max(root.left.left)
-                        root.left.value = predecessor.value
-                        self.remove(root.left, predecessor.value)
-                        self.size += 1
-                    self.size -= 1
-                else:
-                    # Recursive case: Search left
-                    self.remove(root.left, val)
-            # Update height
-            root.height = max(self.height(root.right) + 1, self.height(root.left))
+        remorigin = False
+
+        if val < root.value:
+            # Check left
+            root.left = self.remove(root.left, val)
+        elif val > root.value:
+            # Check right
+            root.right = self.remove(root.right, val)
         else:
-            # Remove origin
+            # Remove root
+            self.size -= 1
+            if root is self.origin:
+                remorigin = True
             if root.right is None and root.left is None:
-                # Remove leaf
-                if root.parent is not None:
-                    root.parent.left = None
-                else:
+                # Remove leaf node
+                if remorigin:
                     self.origin = None
-                root = None
-            elif root.right is None and root.left is not None:
-                # Remove node with one left child
-                root = root.left
-                self.origin = root
-                root.parent.left = None
-                root.parent = None
+                return None
             elif root.right is not None and root.left is None:
-                # Remove node with one right child
-                root = root.right
-                self.origin = root
-                root.parent.right = None
-                root.parent = None
+                # Remove node with only right child
+                temp = root.right
+                root = None
+                if remorigin:
+                    self.origin = temp
+                return temp
+            elif root.right is None and root.left is not None:
+                # Remove node with only left child
+                temp = root.left
+                root = None
+                if remorigin:
+                    self.origin = temp
+                return temp
             else:
                 # Remove node with two children
-                predecessor = self.max(root.left)
-                root.value = predecessor.value
-                self.remove(root.left, predecessor.value)
-                self.size += 1
-            self.size -= 1
+                pred = self.max(root.left)
+                root.value = pred.value
+                self.size += 1  # Accounts for the second removal
+                root.left = self.remove(root.left, pred.value)
+        # Update height
+        root.height = 1 + max(self.height(root.left), self.height(root.right))
 
-        # Rebalance the ancestors
+        # Rebalance and return
         return self.rebalance(root)
 
 
