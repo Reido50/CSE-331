@@ -187,7 +187,7 @@ class HashTable:
             if self.table[index] is None:
                 # Hash index location is open, return index
                 return index
-            elif self.table[index].deleted:
+            if self.table[index].deleted:
                 # Hash index location is open (Deleted element)
                 if inserting:
                     return index
@@ -262,7 +262,7 @@ class HashTable:
             if node is None:
                 # Empty element (No need to add to new table)
                 continue
-            elif node.deleted:
+            if node.deleted:
                 # Deleted element (not need to add to new table)
                 continue
             else:
@@ -274,9 +274,8 @@ class HashTable:
                         # Hash index location is open, return index
                         newtable[index] = node
                         break
-                    else:
-                        # Keep looking for a location
-                        i += 1
+                    # Keep looking for a location
+                    i += 1
         # Replace current table with the bigger one
         self.table = newtable
 
@@ -335,24 +334,54 @@ class HashTable:
 class CataData:
     def __init__(self) -> None:
         """
-        ADD DOCSTRING HERE
+        Initializes CataData data structure
         """
-        pass
+        # Hash table for enters
+        # Key: ID of rider
+        # Value: Tuple(str, int) where [0] is the origin and [1] is the time of enterance
+        self.enters = HashTable()
+        # Hash table for successful trips
+        # Key: Concat of origin and dest
+        # Value: Tuple(int, int) where [0] is total time of all trips and [1] is number of trips
+        self.trips = HashTable()
 
     def enter(self, idx: str, origin: str, time: int) -> None:
         """
-        ADD DOCSTRING HERE
+        Notes that a rider (idx) has entered a bus at a location (origin) at a time (time)
         """
-        pass
+        # Add rider to the enters hash table
+        self.enters[idx] = (origin, time)
 
     def exit(self, idx: str, dest: str, time: int) -> None:
         """
-        ADD DOCSTRING HERE
+        Notes that a rider (idx) has exited a bus at a location (origin) at a time (time)
         """
-        pass
+        if not idx in self.enters:
+            # Do nothing if the idx never entered a bus
+            return
+
+        # Create an identifier for the trip
+        triplocs = self.enters[idx][0] + dest
+
+        if not triplocs in self.trips:
+            # First time the trip has been completed
+            self.trips[triplocs] = (time - self.enters[idx][1], 1)
+        else:
+            # Nth time the trip has been completed
+            totaltime = self.trips[triplocs][0] + (time - self.enters[idx][1])
+            totaltrips = self.trips[triplocs][1] + 1
+            self.trips[triplocs] = (totaltime, totaltrips)
 
     def get_average(self, origin: str, dest: str) -> float:
         """
-        ADD DOCSTRING HERE
+        Gets the average travel time of users riding CATA busses from origin to dest
         """
-        pass
+        # Create an indentifier for the trip
+        triplocs = origin + dest
+
+        if triplocs in self.trips:
+            # Trip has been completed at least once
+            # Return average travel time
+            return self.trips[triplocs][0] / self.trips[triplocs][1]
+        # Trip never completed
+        return 0.0
