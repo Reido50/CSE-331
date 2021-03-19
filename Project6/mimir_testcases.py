@@ -1,6 +1,6 @@
 import unittest
 import random
-from Project6.hashtable import HashTable, HashNode, CataData
+from hashtable import HashTable, HashNode, CataData
 
 random.seed(331)
 

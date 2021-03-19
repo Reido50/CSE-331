@@ -135,93 +135,201 @@ class HashTable:
 
     def __len__(self) -> int:
         """
-        ADD DOCSTRING HERE
+        Getter for the size in the HashTable
+        :return: Size of the HashTable
         """
-        pass
+        return self.size
 
     def __setitem__(self, key: str, value: T) -> None:
         """
-        ADD DOCSTRING HERE
+        Sets the value with an associated key in the HashTable
+        :param key: The key we are hasing
+        :param value: The associated value we are storing
         """
-        pass
+        self._insert(key, value)
 
     def __getitem__(self, key: str) -> T:
         """
-        ADD DOCSTRING HERE
+        Looks up the value with an associated key in the HashTable
+        :param key: The key we are searching for the associated value of
         """
-        pass
+        item = self._get(key)
+        if item is None:
+            raise KeyError('Given key not found in hash table')
+        return item.value
 
     def __delitem__(self, key: str) -> None:
         """
-        ADD DOCSTRING HERE
+        Deletes the value with an associated key in the HashTable
+        :param key: The key we are deleting the associated value of
         """
-        pass
+        if self._get(key) is None:
+            raise KeyError('Given key not found in hash table')
+        self._delete(key)
 
     def __contains__(self, key: str) -> bool:
         """
-        ADD DOCSTRING HERE
+        Determines if a node with the key denoted by the parameter exists in the table
+        :param key: The key we are checking to be a part of the hash table
+        :return: True if the key is in the hash table, false otherwise
         """
-        pass
+        return self._get(key) is not None
 
     def hash(self, key: str, inserting: bool = False) -> int:
         """
-        ADD DOCSTRING HERE
+        Given a key string return an index in the hash table
+        :param key: The key being used in our hash function
+        :param inserting: Whether or not we are doing an insertion
         """
-        pass
+        i = 0
+        while i < self.capacity:
+            index = (self._hash_1(key) + i * self._hash_2(key)) % self.capacity
+            if self.table[index] is None:
+                # Hash index location is open, return index
+                return index
+            elif self.table[index].deleted:
+                # Hash index location is open (Deleted element)
+                if inserting:
+                    return index
+                i += 1
+            elif self.table[index].key == key:
+                # Hash index location holds the key, return index
+                return index
+            else:
+                # Keep looking for a location
+                i += 1
 
     def _insert(self, key: str, value: T) -> None:
         """
-        ADD DOCSTRING HERE
+        Use the key and value parameters to add a HashNode to the hash table
+        :param key: The key associated with the value we are storing
+        :param value: The associated value we are storing
         """
-        pass
+        # Insert a node
+        index = self.hash(key, True)
+        if self.table[index] is not None:
+            if self.table[index].key != key:
+                self.size += 1
+        else:
+            self.size += 1
+        self.table[index] = HashNode(key, value)
+
+        # Grow if load factor is greater than 0.5
+        if self.size / self.capacity >= 0.5:
+            self._grow()
 
     def _get(self, key: str) -> HashNode:
         """
-        ADD DOCSTRING HERE
+        Find the HashNode with the given key in the hash table
+        :param key: The key we are looking up
+        :return: HashNode with the key we looked up
         """
-        pass
+        index = self.hash(key, False)
+        if self.table[index] is None:
+            # Key was not found, return None
+            return None
+        if self.table[index].key == key:
+            # Key was found, return node
+            return self.table[index]
 
     def _delete(self, key: str) -> None:
         """
-        ADD DOCSTRING HERE
+        Removes the HashNode with the given key from the hash table
+        :param key: The key of the Node we are looking to delete
         """
-        pass
+        found = self._get(key)
+        found.key = None
+        found.value = None
+        found.deleted = True
+        self.size -= 1
 
     def _grow(self) -> None:
         """
-        ADD DOCSTRING HERE
+        Double the capacity of the existing hash table
         """
-        pass
+        # Update capacity and make new table
+        self.capacity *= 2
+        newtable = [None] * self.capacity
+
+        # Update prime_index
+        for i in range(len(self.primes)):
+            if self.primes[i] > self.capacity:
+                break
+            self.prime_index = i
+
+        # Rehash all nodes
+        for node in self.table:
+            if node is None:
+                # Empty element (No need to add to new table)
+                continue
+            elif node.deleted:
+                # Deleted element (not need to add to new table)
+                continue
+            else:
+                # Must rehash
+                i = 0
+                while i < self.capacity:
+                    index = (self._hash_1(node.key) + i * self._hash_2(node.key)) % self.capacity
+                    if newtable[index] is None:
+                        # Hash index location is open, return index
+                        newtable[index] = node
+                        break
+                    else:
+                        # Keep looking for a location
+                        i += 1
+        # Replace current table with the bigger one
+        self.table = newtable
+
 
     def update(self, pairs: List[Tuple[str, T]] = []) -> None:
         """
-        ADD DOCSTRING HERE
+        Updates the hash table using an iterable of key value pairs
+        :param pairs: List of tuple (key, value) being updated
         """
-        pass
+        # Insert each pair into the table
+        for pair in pairs:
+            self._insert(pair[0], pair[1])
 
     def keys(self) -> List[str]:
         """
-        ADD DOCSTRING HERE
+        Makes a list that contains all of the keys in the table
+        :return: List of the keys
         """
-        pass
+        keys = []
+        for node in self.table:
+            if node is not None:
+                keys.append(node.key)
+        return keys
 
     def values(self) -> List[T]:
         """
-        ADD DOCSTRING HERE
+        Makes a list that contains all of the values in the table
+        :return: List of the values
         """
-        pass
+        values = []
+        for node in self.table:
+            if node is not None:
+                values.append(node.value)
+        return values
 
     def items(self) -> List[Tuple[str, T]]:
         """
-        ADD DOCSTRING HERE
+        Makes a list that contains all of the keys/values in the table
+        :return: List of key/value pairs
         """
-        pass
+        items = []
+        for node in self.table:
+            if node is not None:
+                items.append((node.key, node.value))
+        return items
 
     def clear(self) -> None:
         """
-        ADD DOCSTRING HERE
+        Should clear the table of HashNodes completely
         """
-        pass
+        for i in range(len(self.table)):
+            self.table[i] = None
+        self.size = 0
 
 
 class CataData:
