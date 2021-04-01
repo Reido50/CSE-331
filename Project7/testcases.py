@@ -1,6 +1,6 @@
 import unittest
 
-from Project7.PriorityQueue import MinNode, MaxNode, PriorityQueue, MaxHeap, heap_sort, current_medians
+from PriorityQueue import MinNode, MaxNode, PriorityQueue, MaxHeap, heap_sort, current_medians
 import random
 
 
@@ -664,3 +664,6 @@ class TestPriorityQueue(unittest.TestCase):
         result = current_medians(array)
         solution = [i for i in range(20000)]
         self.assertEqual(solution, result)
+
+if __name__ == '__main__':
+    unittest.main()

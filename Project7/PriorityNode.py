@@ -68,19 +68,25 @@ class MaxNode(PriorityNode):
     #   Modify below this line
     def __lt__(self, other: 'MaxNode') -> bool:
         """
-        TODO
-        :param other:
-        :return:
+        Less than comparator. Determines if self is greater than other node, and thus should
+        be sorted lower than other node in priority queue
+        :param other: Node to compare self to
+        :return: False if self is less than other, True is self is greater than other
         """
-        pass
+        if self.priority == other.priority:
+            return self.value > other.value
+        return self.priority > other.priority
 
     def __gt__(self, other: 'MaxNode') -> bool:
         """
-        TODO
-        :param other:
-        :return:
+        Greater than comparator. Determines if self node is less than other node, and thus
+        should be sorted higher than other node in priority queue
+        :param other: Node to compare self to
+        :return: False if self is greater than other, True is self is less than other
         """
-        pass
+        if self.priority == other.priority:
+            return self.value < other.value
+        return self.priority < other.priority
 
 
 class MinNode(PriorityNode):
@@ -107,16 +113,22 @@ class MinNode(PriorityNode):
     #   Modify below this line
     def __lt__(self, other: 'MinNode') -> bool:
         """
-        TODO
-        :param other:
-        :return:
+        Less than comparator. Determines if self node is less than other node, and thus should
+        be sorted higher than other node in priority queue
+        :param other: Node to compare self to
+        :return: True if self is less than other, False if self is greater than other
         """
-        pass
+        if self.priority == other.priority:
+            return self.value < other.value
+        return self.priority < other.priority
 
     def __gt__(self, other: 'MinNode') -> bool:
         """
-        TODO
-        :param other:
-        :return:
+        Greater than comparator. Determines if self node is greater than other node, and thus
+        should be sorted lower than other node in priority queue
+        :param other: Node to compare self to
+        :return: True if self is greater than other, False if self is less than other
         """
-        pass
+        if self.priority == other.priority:
+            return self.value > other.value
+        return self.priority > other.priority

@@ -77,88 +77,148 @@ class PriorityQueue:
     #   Modify below this line
     def __len__(self) -> int:
         """
-        TODO
-        :return:
+        Determine the amount of nodes on the heap
+        :return: The amount of nodes in the priority queue
         """
-        pass
+        return len(self._data)
 
     def empty(self) -> bool:
         """
-        TODO
-        :return:
+        Checks if the heap is empty
+        :return: True if Empty, else False
         """
-        pass
+        return len(self) == 0
 
     def peek(self) -> PriorityNode:
         """
-        TODO
-        :return:
+        Gets the root node (min or max node)
+        :return: None if heap is empty, else root node
         """
-        pass
+        if self.empty():
+            return None
+        return self._data[0]
 
     def get_left_child_index(self, index: int) -> int:
         """
-        TODO
-        :param index:
-        :return:
+        Gets the specified parent node's left child index
+        :param index: Index of parent node
+        :return: Index of left child or None if it does not exist
         """
-        pass
+        leftindex = 2*index + 1
+        if leftindex < len(self):
+            return leftindex
+        return None
 
     def get_right_child_index(self, index: int) -> int:
         """
-        TODO
-        :param index:
-        :return:
+        Gets the specified parent node's right child index
+        :param index: Index of parent node
+        :return: Index of right child or None if it does not exist
         """
-        pass
+        rightindex = 2*index + 2
+        if rightindex < len(self):
+            return rightindex
+        return None
 
     def get_parent_index(self, index: int) -> int:
         """
-        TODO
-        :param index:
-        :return:
+        Gets the specified child node's parent index
+        :param index: Index of child node
+        :return: Index of parent or None if it does not exist
         """
-        pass
+        parentindex = (index-1) // 2
+        if parentindex >= 0:
+            return parentindex
+        return None
 
     def push(self, priority: Any, val: Any) -> None:
         """
-        TODO
-        :param priority:
-        :param val:
-        :return:
+        Inserts a node with the specified priority/value pair onto the heap
+        :param priority: Node's priority
+        :param val: Node's value
+        :return: None
         """
-        pass
+        # Add the new node to the end of the heap
+        if self.is_min_heap():
+            self._data.append(MinNode(priority, val))
+        else:
+            self._data.append(MaxNode(priority, val))
+        # Percolate up
+        self.percolate_up(len(self)-1)
 
     def pop(self) -> PriorityNode:
         """
-        TODO
-        :return:
+        Removes the top priority node from heap
+        :return: The root node of the heap
         """
-        pass
+        # Can't pop on an empty queue
+        if self.empty():
+            return
+        # Grab the top priority node
+        removed = self._data[0]
+        # Move the bottom node to the top
+        self._data[0] = self._data[len(self) - 1]
+        self._data.pop()
+        # Percolate down
+        self.percolate_down(0)
+        # Return the removed node
+        return removed
 
     def get_minmax_child_index(self, index: int) -> int:
         """
-        TODO
-        :param index:
-        :return:
+        Gets the specified parent's min or max child index
+        :param index: Index of parent element
+        :return: Index of min child or max child or None if invalid
         """
-        pass
+        right = self.get_right_child_index(index)
+        left = self.get_left_child_index(index)
+        # Check to see if right and/or left is None
+        if right is None:
+            return left
+        if left is None:
+            return right
+        # Return the min/max value
+        if self._data[right] < self._data[left]:
+            return right
+        return left
 
     def percolate_up(self, index: int) -> None:
         """
-        TODO
-        :param index:
-        :return:
+        Moves a node in the queue/heap up to its correct position (level in the tree)
+        :param index: Index of node to be percolated up
+        :return: None
         """
-        pass
+        parentindex = self.get_parent_index(index)
+        # If parent does not exist, index is already the root
+        if parentindex is None:
+            return
+        # Compare current to parent
+        if self._data[parentindex] > self._data[index]:
+            # Swap values and try again on parent
+            self._data[parentindex], self._data[index] = self._data[index], self._data[parentindex]
+            self.percolate_up(parentindex)
+        else:
+            # End of percolation
+            return
 
     def percolate_down(self, index: int) -> None:
         """
-        TODO
-        :param index:
-        :return:
+        Moves a node in the queue/heap down to its correct position (level in the tree)
+        :param index: Index of node to be percolated up
+        :return: None
         """
-        pass
+        childindex = self.get_minmax_child_index(index)
+        # If parent does not exist, index is already a leaf
+        if childindex is None:
+            return
+        # Compare current to parent
+        if self._data[childindex] < self._data[index]:
+            # Swap values and try again on parent
+            self._data[childindex], self._data[index] = self._data[index], self._data[childindex]
+            self.percolate_down(childindex)
+        else:
+            # End of percolation
+            return
 
 
 class MaxHeap:
@@ -219,25 +279,29 @@ class MaxHeap:
     #   Modify below this line
     def peek(self) -> Any:
         """
-        TODO
-        :return:
+        Gets the max element's value
+        :return: Max element's value
         """
-        pass
+        if self._pqueue.empty():
+            return None
+        return self._pqueue.peek().value
 
     def push(self, val: Any) -> None:
         """
-        TODO
-        :param val:
-        :return:
+        Inserts a node with the specified value onto the heap
+        :param val: Node's value
+        :return: None
         """
-        pass
+        self._pqueue.push(val, val)
 
     def pop(self) -> Any:
         """
-        TODO
-        :return:
+        Removes the max element from the heap
+        :return: Value of max element
         """
-        pass
+        if self.empty():
+            return None
+        return self._pqueue.pop().value
 
 
 class MinHeap(MaxHeap):
@@ -264,17 +328,50 @@ class MinHeap(MaxHeap):
 
 def heap_sort(array: List[Any]) -> None:
     """
-    TODO
-    :param array:
-    :return:
+    Sort array in-place using heap sort algorithm w/ max-heap
+    :param array: List to be sorted
+    :return: None
     """
-    pass
+    # Make a populate a max heap
+    heap = MaxHeap()
+    for i in array:
+        heap.push(i)
+    # Pop the max heap into the array in reverse order
+    for i in range(len(array)-1, -1, -1):
+        array[i] = heap.pop()
+    
 
 
 def current_medians(array: List[int]) -> List[int]:
     """
-    TODO
-    :param array:
-    :return:
+    Calculate a list of current medians as the input list is iterated over
+    :param array: List of numeric values
+    :return: List of current medians in order data was read in
     """
-    pass
+    medians = []
+    maxh = MaxHeap()
+    minh = MinHeap()
+    for i in array:
+        # Add number to heap system
+        if minh.peek() is None:
+            minh.push(i)
+        elif i < minh.peek():
+            # Add to max heap
+            maxh.push(i)
+            # Balance list lengths if needed
+            if len(maxh) > len(minh) + 1:
+                minh.push(maxh.pop())
+        else:
+            # Add to min heap
+            minh.push(i)
+            # Balance list lengths if needed
+            if len(minh) > len(maxh) + 1:
+                maxh.push(minh.pop())
+        # Get current median and add it to medians
+        if len(minh) < len(maxh):
+            medians.append(maxh.peek())
+        elif len(minh) > len(maxh):
+            medians.append(minh.peek())
+        else:
+            medians.append((maxh.peek() + minh.peek())/2)
+    return medians
