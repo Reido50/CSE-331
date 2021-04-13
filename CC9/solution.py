@@ -70,8 +70,9 @@ def dungeon_escape(dungeon: Dungeon, start_room: int, end_room: int,
     bfsqueue.append(start_room)
 
     # Value to track how much stamina we have used
+    staminaused = 0
 
-    # Loop for bfs
+    # Loop for dfs
     while len(bfsqueue) != 0:
         cur = bfsqueue.popleft()
         if cur == end_room:
@@ -83,4 +84,4 @@ def dungeon_escape(dungeon: Dungeon, start_room: int, end_room: int,
                 bfsqueue.append(room)
                 visited[room] = True
     
-    staminaused = bfs(start_room, end_room)
+    
