@@ -20,22 +20,16 @@
     <!-- (2) Please enter your feedback below. How did you like the Project/CC? -->
     <!-- What was easy? What was challenging? How could we improve it in the future? -->
     <feedback>
-        The application problem was difficult! Spent a long time staring at it and the piazza posts.
+        Loved this one! Felt challenging, but I never hit a wall. Was always incrementally getting my solution to work better
     </feedback>
 
-    <!-- (3) Please enter how difficult this project was -->
-    <!--  0 means Easy, 10 means Rocket Science (very difficult)  -->
-    <difficulty>
-        8
-    </difficulty>
-
-    <!-- (4) Please enter approximately how long the Project/CC took you in hours (as a floating point).  -->
+    <!-- (3) Please enter approximately how long the Project/CC took you in hours (as a floating point).  -->
     <!-- For example, if it took you 45 minutes, enter 0.75; if it took you 2 and a half hours, enter 2.5. -->
     <time>
-        6
+        2
     </time>
 
-    <!-- (5) Please cite the resources you used to complete the Project/CC. URLs are fine!  -->
+    <!-- (4) Please cite the resources you used to complete the Project/CC. URLs are fine!  -->
     <citations>
         None
     </citations>
@@ -43,8 +37,8 @@
     <!-- *********************************************************************************************************** -->
 
     <!-- Configured by Project/CC author. DO NOT EDIT! -->
-    <type>Project</type>    <!-- Enter "Project" or "CC" without quotes -->
-    <number>7</number>      <!-- Enter Project/CC number as integer -->
+    <type>CC</type>    <!-- Enter "Project" or "CC" without quotes -->
+    <number>10</number>      <!-- Enter Project/CC number as integer -->
 
     <!-- *********************************************************************************************************** -->
 
