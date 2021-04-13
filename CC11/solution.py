@@ -99,10 +99,17 @@ class Trie:
 
 
 def enemy_revealer(trie: Trie, key: str) -> List[str]:
+    """
+    Returns a list of enemy names that are compatable with a given key
+    :param trie: Trie of enemy names of size n
+    :param key: Key pattern string to match enemies with
+    :return: New list of enemies that match the key pattern
+    """
+
     output = []
     root = trie.root
     nextpos = 0
-    toremove = []
+    toremove = set()
 
     def recur_helper(node: Node, c, seg: str, pos):
         # Manage current node
@@ -110,26 +117,30 @@ def enemy_revealer(trie: Trie, key: str) -> List[str]:
 
         # Check if it's the end of the current word
         if node.is_end:
-            if seg != "":
-                toremove.append(output[pos])
-            return
+            if seg != "" and not (seg[0] == c and len(seg) == 1):
+                toremove.add(output[pos])
+
+        # Check if uppercase and not the beginning
+        if (c >= 'A' and c <= 'Z') and len(output[pos]) > 1:
+            if seg == "" or c != seg[0]:
+                toremove.add(output[pos])
+                return
+
+        # Check if new seg is needed
+        if seg != "" and c == seg[0]:
+            seg = seg[1:]
 
         # Continue through the word
-        posinc = 0
+        newword = False
         currentword = output[pos]
         for k in node.children:
-            # Check if uppercase
-            if k >= 'A' and k <= 'Z':
-                if seg == "" or k != seg[0]:
-                    toremove.append(currentword)
-                    continue
-            if posinc > 0:
+            # Recur, but different if it's the current word or a new word
+            if newword or node.is_end:
                 output.append(currentword)
-            if seg != "" and k == seg[0]:
-                recur_helper(node.children[k], k, seg[1:], pos + posinc)
+                recur_helper(node.children[k], k, seg, len(output)-1)
             else:
-                recur_helper(node.children[k], k, seg, pos + posinc)
-            posinc += 1
+                recur_helper(node.children[k], k, seg, pos)
+            newword = True
 
     # Find first node
     for k in root.children:
@@ -137,5 +148,10 @@ def enemy_revealer(trie: Trie, key: str) -> List[str]:
             output.append("")
             recur_helper(root.children[k], k, key[1:], nextpos)
             break
+
+    # Remove bad words
+    for word in toremove:
+        if word in output:
+            output.remove(word)
 
     return output

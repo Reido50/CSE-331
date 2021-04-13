@@ -61,7 +61,7 @@ class TestCodingChallenge10(unittest.TestCase):
         actual = enemy_revealer(trie, "BeKn")
         self.assertCountEqual(expected, actual)
 
-        # Should return nothing!
+        # Should return nothing!\
         expected = []
         actual = enemy_revealer(trie, "BKing")
         self.assertCountEqual(expected, actual)
