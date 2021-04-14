@@ -1,0 +1,21 @@
+None,A,B,C,D,E,F,G,H,I,J,K,L,M,Breslin Center,Spartan Stadium,Wells Hall,Engineering Building,Library,Union,The Rock
+A,None,8,None,None,None,None,None,None,None,None,None,None,None,0,None,None,None,None,None,None
+B,8,None,8,None,None,None,5,None,None,None,None,None,None,None,None,None,None,None,None,None
+C,None,8,None,8,None,None,None,None,None,None,None,None,None,None,0,None,None,None,None,None
+D,None,None,8,None,12,None,None,4,None,None,None,None,None,None,None,None,None,None,None,None
+E,None,None,None,12,None,12,None,None,None,None,None,None,None,None,None,0,0,None,None,None
+F,None,None,None,None,12,None,None,None,16,None,None,None,None,None,None,None,None,None,None,None
+G,None,5,None,None,None,None,None,5,None,5,None,None,None,None,None,None,None,None,None,None
+H,None,None,None,4,None,None,5,None,6,None,None,None,None,None,None,None,None,None,None,None
+I,None,None,None,None,None,16,None,6,None,None,None,16,None,None,None,None,None,None,None,None
+J,None,None,None,None,None,None,5,None,None,None,4,None,4,None,None,None,None,None,None,None
+K,None,None,None,None,None,None,None,None,None,4,None,4,None,None,None,None,None,0,None,None
+L,None,None,None,None,None,None,None,None,16,None,4,None,4,None,None,None,None,None,None,0
+M,None,None,None,None,None,None,None,None,None,4,None,4,None,None,None,None,None,None,0,None
+Breslin Center,0,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+Spartan Stadium,None,None,0,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+Wells Hall,None,None,None,None,0,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+Engineering Building,None,None,None,None,0,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+Library,None,None,None,None,None,None,None,None,None,None,0,None,None,None,None,None,None,None,None,None
+Union,None,None,None,None,None,None,None,None,None,None,None,None,0,None,None,None,None,None,None,None
+The Rock,None,None,None,None,None,None,None,None,None,None,None,0,None,None,None,None,None,None,None,None

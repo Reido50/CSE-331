@@ -1,0 +1,7 @@
+,bottomleft,midleft,bottomright,midright,topleft,topright
+bottomleft,,1,1,,,
+midleft,1,,,1,1,
+bottomright,1,,,1,,
+midright,,1,1,,,1
+topleft,,1,,,,1
+topright,,,,1,1,
