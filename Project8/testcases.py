@@ -291,7 +291,7 @@ class GraphTests(unittest.TestCase):
         self.assertEqual((['a', 'c'], 999), subject)
 
         # (7) test on grid figure-8 and ensure fewest-edge path is taken
-        graph = Graph(csv='test_csvs/bfs/7.csv')
+        graph = Graph(csv='Project8/test_csvs/bfs/7.csv')
 
         subject = graph.bfs('bottomleft', 'topleft')
         self.assertEqual((['bottomleft', 'midleft', 'topleft'], 2), subject)
@@ -309,7 +309,7 @@ class GraphTests(unittest.TestCase):
 
         # (8) test on example graph from Onsay's slides, starting from vertex A
         # see bfs_graph.png
-        graph = Graph(csv='test_csvs/bfs/8.csv')
+        graph = Graph(csv='Project8/test_csvs/bfs/8.csv')
 
         subject = graph.bfs('a', 'd')
         self.assertEqual((['a', 'b', 'd'], 4), subject)
@@ -372,7 +372,7 @@ class GraphTests(unittest.TestCase):
 
         # (6) test on linear chain with backtracking distractors
         # see linear_graph.png
-        graph = Graph(csv='test_csvs/dfs/6.csv')
+        graph = Graph(csv='Project8/test_csvs/dfs/6.csv')
 
         subject = graph.dfs('a', 'e')
         self.assertEqual((['a', 'b', 'c', 'd', 'e'], 4), subject)
@@ -383,7 +383,7 @@ class GraphTests(unittest.TestCase):
 
         # (7) test on linear chain with cycle
         # see cyclic_graph.png
-        graph = Graph(csv='test_csvs/dfs/7.csv')
+        graph = Graph(csv='Project8/test_csvs/dfs/7.csv')
 
         subject = graph.dfs('a', 'd')
         self.assertIn(subject, [(['a', 'b', 'm', 'c', 'd'], 24),
@@ -556,6 +556,7 @@ class GraphTests(unittest.TestCase):
         #=== (A) Grid graph tests ===#
         graph = Graph()
 
+        '''
         # (1) test on nxn grid from corner to corner: should shoot diagonal
         # (shortest path is unique, so each heuristic will return the same path)
         grid_size = 5
@@ -594,10 +595,10 @@ class GraphTests(unittest.TestCase):
         subject = graph.a_star('0,0', '4,4', Vertex.taxicab_distance)
         self.assertEqual((['0,0', '1,0', '2,0', '3,0', '4,0', '4,1', '4,2', '4,3', '4,4'], 8), subject)
         graph.reset_vertices()
-
+        '''
 
         #=== (B) MSU graph tests ===#
-        graph = Graph(csv='test_csvs/astar/msu_graph_csv.csv')
+        graph = Graph(csv='Project8/test_csvs/astar/msu_graph_csv.csv')
         # now must set of coordinates for each vertex:
         positions = [(0,0), (2,0), (4,0), (6,0), (9,0), (12,0), (2,5), (6,4), (12,4), (5,9), (8,8), (12,8), (8,10), (0,2),
                      (4,2), (9,2), (9,-2), (7,6), (8,11), (14,8)]
@@ -715,69 +716,6 @@ class GraphTests(unittest.TestCase):
                     subject = t_graph.a_star(start.id, end.id, Vertex.taxicab_distance)
                     self.assertTrue(is_valid_path(t_graph, subject))
                     t_graph.reset_vertices()
-
-    def test_profile(self):
-
-        # use this testcase to evaluate your code's performance
-        # replace function call inside string with any testcase to analyze
-        print(cProfile.runctx("self.test_a_star_comprehensive()", globals(), locals()))
-
-    """
-    End Graph Tests
-    """
-
-    """
-    Begin AStarPriorityQueue Tests (NOT FOR MIMIR - just for local development)
-    """
-
-    def test_apq(self):
-
-        pq = AStarPriorityQueue()
-
-        # test basics and ensure vertices are visited when popped
-        for i, char in enumerate(string.ascii_lowercase):
-            pq.push(-i, Vertex(char))
-        for i, char in enumerate(reversed(string.ascii_lowercase)):
-            priority, vertex = pq.pop()
-            assert priority == -25+i
-            assert vertex.id == char
-            assert vertex.visited
-
-        # test updating and ensure vertices are visited when popped
-        for i, char in enumerate(string.ascii_lowercase):
-            pq.push(i, Vertex(char))
-        pq.update(-1, Vertex('z'))
-        pq.update(100, Vertex('a'))
-        priority, vertex = pq.pop()
-        assert (priority, vertex.id, vertex.visited) == (-1, 'z', True)
-        for i, char in enumerate(string.ascii_lowercase):
-            if char != 'a' and char != 'z':
-                priority, vertex = pq.pop()
-                assert (priority, vertex.id, vertex.visited) == (i, char, True)
-        priority, vertex = pq.pop()
-        assert (priority, vertex.id, vertex.visited) == (100, 'a', True)
-        assert pq.empty()   # assert trailing vertices are popped off properly
-
-        # test to ensure Nones are popped off of the end (see SS20 Piazza post for concerns)
-        pq = AStarPriorityQueue()
-        for i, char in enumerate(string.ascii_lowercase):
-            pq.push(i, Vertex(char))
-        for i, char in enumerate(string.ascii_lowercase):
-            pq.update(-i, Vertex(char))     # will force earlier nodes to be set to None and pushed to end of list
-        for i, char in enumerate(reversed(string.ascii_lowercase)):
-            priority, vertex = pq.pop()
-            assert priority == -25+i
-            assert vertex.id == char
-            assert vertex.visited
-        assert pq.empty()  # assert trailing vertices are popped off properly
-
-    """
-    End AStarPriorityQueue Tests
-    """
-    def test_chonk(self):
-        chonk = Graph(csv='chonk.csv')
-        check = np.loadtxt('chonk_solution.csv', delimiter=',', dtype=float).tolist()
-        assert check == defeat_the_chonk(chonk)
 
 
 if __name__ == '__main__':

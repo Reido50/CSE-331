@@ -334,7 +334,7 @@ class Graph:
         :return: Vertex object with the id vertex_id
         """
         # Grab the Vertex from the vertices dictionary using vertex_id as the key
-        return self.vertices[vertex_id]
+        return self.vertices.get(vertex_id)
 
     def get_vertices(self) -> Set[Vertex]:
         """
@@ -383,17 +383,215 @@ class Graph:
         return output
 
     def bfs(self, start_id: str, target_id: str) -> Tuple[List[str], float]:
-        pass
+        """
+        Perform a breadth-first search
+        :param start_id: Starting vertex for BFS
+        :param target_id: Ending vertex for BFS
+        :return: Tuple with a list of vertex ids that were traversed and the distance travelled
+        """
+        # Init queue, list, distance, and history
+        q = queue.SimpleQueue()
+        ids = []
+        dist = 0
+        history = {}
+
+        def visit(cur_id: str, prev_id: str):
+            """
+            Helper function for when a vertex is visited
+            :param cur_id: ID of current vertex
+            :param prev_id: ID of previous vertex
+            """
+            q.put(self.vertices[cur_id])
+            self.vertices[cur_id].visited = True
+            history[cur_id] = prev_id
+
+        # Check if given ids are not valid
+        if self.vertices.get(start_id) is None or self.vertices.get(target_id) is None:
+            return ([], 0)
+        # Visit start_id
+        visit(start_id, "start")
+        # Loop to do the traversal
+        while not q.empty():
+            # Pop top vertex
+            popped = q.get()
+            # Check if target_id is adjacent to popped
+            if popped.adj.get(target_id) is not None:
+                ids.append(target_id)
+                ids.append(popped.id)
+                prev = popped.id
+                current = history[popped.id]
+                dist += popped.adj[target_id]
+                while (current != "start"):
+                    ids.append(current)
+                    dist += self.vertices[current].adj[prev]
+                    prev = current
+                    current = history[current]
+                ids.reverse()
+                return (ids, dist)
+            # Visit each unvisited adjacent vertex of popped
+            for adjs in popped.adj:
+                if not self.vertices[adjs].visited:
+                    visit(adjs, popped.id)
+        # Target_id was not found
+        return ([], 0)
 
     def dfs(self, start_id: str, target_id: str) -> Tuple[List[str], float]:
-        pass
+        """
+        Performs a Depth First Search
+        :param start_id: Starting vertex for DFS
+        :param target_id: Ending vertex for DFS
+        :return: Tuple with a list of vertex ids that were traversed and the distance travelled
+        """
+        
+        # Check to see if invalid input
+        if self.vertices.get(start_id) is None or self.vertices.get(target_id) is None:
+            return ([], 0)
+
+        # Call the inner function
+        return self.dfs_inner(start_id, target_id, [])
+
+    def dfs_inner(self, current_id: str, target_id: str, path:List[str]=[]) -> Tuple[List[str], float]:
+        """
+        Performs recursive work of DFS
+        :param current_id: ID of current vertex
+        :param target_id: ID of target vertex
+        :param path: List of vertex id strings that connect start to target
+        """
+        # Visit the current vertex
+        self.vertices[current_id].visited = True
+        path.append(current_id)
+
+        # Check if we are at target
+        if current_id == target_id:
+            dist = 0
+            prev = None
+            for current in path:
+                if prev is not None:
+                    dist += self.vertices[prev].adj[current]
+                prev = current
+            return (path, dist)
+
+        # Visit adjacent vertices if not already visited
+        initiallen = len(path)
+        for adjs in self.vertices[current_id].adj:
+            if not self.vertices[adjs].visited:
+                tup = self.dfs_inner(adjs, target_id, path)
+                if tup[0] != [] and tup[1] != 0:
+                    return tup
+                if len(path) != initiallen:
+                    path = path[0:initiallen]
+            
+        # Return no path tuple
+        return ([], 0)
 
     def detect_cycle(self) -> bool:
-        pass
+        """
+        Detects if the graph contains a cycle using a BFS
+        :return: True if the graph contains a cycle, otherwise False
+        """
+        result = False
+        processing = {}
+        for vid in self.vertices:
+            if not self.vertices[vid].visited:
+                if self.detect_cycle_inner(vid, processing):
+                    result = True
+                    break
+        self.reset_vertices()
+        return result
+        
+    def detect_cycle_inner(self, current_id: str, processing: dict) -> bool:
+        """
+        Performs recursive work of detect cycle
+        :param current_id: ID of current vertex
+        :param processing: Dictionary holding which vertex ids are being processed
+        """
+        # Mark as visited and processing
+        self.vertices[current_id].visited = True
+        processing[current_id] = True
+
+        # Visit adjacent vertices
+        for adjid in self.vertices[current_id].adj:
+            if not self.vertices[adjid].visited:
+                if self.detect_cycle_inner(adjid, processing):
+                    return True
+            elif processing.get(adjid) is not None and processing[adjid]:
+                return True
+        
+        # Mark current vertex as not processing anymore
+        processing[current_id] = False
+        return False
 
     def a_star(self, start_id: str, target_id: str,
                metric: Callable[[Vertex, Vertex], float]) -> Tuple[List[str], float]:
-        pass
+        """
+        Perform A* seach from one vertex to another
+        :param start_id: ID of the starting index
+        :param target_id: ID of the target index
+        :param metric: Heuristic metric to use
+        :return: Tuple containing path and distance travelled
+        """
+        # Init counter variables
+        solution = ([], float("inf"))
+        frontier = AStarPriorityQueue()
+        infrontier = {}
+        prev = {}
+
+        # Fill frontier
+        for vid in self.vertices:
+            frontier.push(float("inf"), self.vertices[vid])
+
+        # Check for invalid start or target
+        if self.vertices.get(start_id) is None or self.vertices.get(target_id) is None:
+            return ([], 0)
+
+        # Initialize the A* Queue
+        frontier.update(0, self.vertices[start_id])
+        infrontier[start_id] = 0
+        prev[start_id] = "start"
+
+        # Traverse the graph using A*
+        while not frontier.empty():
+            # Remove the next node from frontier
+            current = frontier.pop()
+            # Remove the next node from infrontier
+            infrontier.pop(current[1].id)
+            # Add the node to the visited
+            current[1].visited = True
+
+            # Calculate dist and ids
+            ids = []
+            dist = 0
+            if prev.get(current[1].id) and prev[current[1].id] != "start":
+                previ = prev[current[1].id]
+                ids.append(current[1].id)
+                ids.append(previ)
+                curr = prev[previ]
+                dist += self.vertices[previ].adj[current[1].id]
+                while (curr != "start"):
+                    ids.append(curr)
+                    dist += self.vertices[curr].adj[previ]
+                    previ = curr
+                    curr = prev[curr]
+                ids.reverse()
+
+            # Check if we made it to target node
+            if current[1].id == target_id:
+                if dist < solution[1]:
+                    solution = (ids, dist)
+
+            # Add all adjacent nodes to frontier with respective weights
+            for adjid in current[1].adj:
+                if (not self.vertices[adjid].visited) and (infrontier.get(adjid) is None):
+                    g = self.vertices[current[1].id].adj[adjid] + dist
+                    h = metric(self.vertices[adjid], self.vertices[target_id])
+                    f = g + h
+                    frontier.update(f, self.vertices[adjid])
+                    infrontier[adjid] = g
+                    prev[adjid] = current[1].id
+
+        return solution
+
+        
 
 class AStarPriorityQueue:
     """
