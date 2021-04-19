@@ -1,5 +1,4 @@
 import unittest, string, math, random, cProfile
-import numpy as np
 from Graph import Graph, Vertex, AStarPriorityQueue, defeat_the_chonk
 
 

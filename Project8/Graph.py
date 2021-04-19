@@ -1,5 +1,5 @@
 """
-Name:
+Name: Reid Harry
 CSE 331 FS20 (Onsay)
 """
 
@@ -11,11 +11,6 @@ import random
 import time
 import csv
 from typing import TypeVar, Callable, Tuple, List, Set
-
-import matplotlib.cm as cm
-import matplotlib.patches as patches
-import matplotlib.pyplot as plt
-import numpy as np
 
 T = TypeVar('T')
 Matrix = TypeVar('Matrix')  # Adjacency Matrix
